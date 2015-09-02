@@ -27,7 +27,7 @@ const uint8_t PROGMEM lcdBootProgram[] = {
   0xA4,  // Entire Display ON
   0xA6,  // Set normal/inverse display
   0xAF,  // Display On
-
+  /*
   0x20,     // set display mode
   0x00,     // horizontal addressing mode
 
@@ -38,6 +38,7 @@ const uint8_t PROGMEM lcdBootProgram[] = {
   0x22, // set page address
   0x00,
   PAGE_ADDRESS_END
+  */
 };
 
 
@@ -171,12 +172,13 @@ uint8_t ArduboyCore::height() { return HEIGHT; }
 
 
 /* Drawing */
-
+/*
 void ArduboyCore::paint8Pixels(uint8_t pixels)
 {
   SPI.transfer(pixels);
 }
-
+*/
+/*
 void ArduboyCore::paintScreen(const unsigned char *image)
 {
   for (int i = 0; i < (HEIGHT*WIDTH)/8; i++)
@@ -203,6 +205,24 @@ void ArduboyCore::paintScreen(unsigned char image[])
       "mul __zero_reg__, __zero_reg__ \n" // 2 cycles
       );
   }
+}
+*/
+
+void ArduboyCore::paintScreen(unsigned char image[])
+{ 
+	for (int8_t i = 7; i >= 0; i--)
+	{
+    LCDCommandMode();
+    SPI.transfer(0xB0 + i);		// Set row
+    SPI.transfer(0x00);		// 0x02, Set lower column address
+    SPI.transfer(0x10); // Set higher column address
+    LCDDataMode();
+    
+    for (uint16_t j = 128; j > 0; j--)
+    {
+		  SPI.transfer(image[i*128+128-j]);
+    }
+	}
 }
 
 void ArduboyCore::blank()
