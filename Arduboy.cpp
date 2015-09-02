@@ -12,6 +12,7 @@ void Arduboy::start()
   tunes.initChannel(PIN_SPEAKER_1);
   tunes.initChannel(PIN_SPEAKER_2);
   audio.setup();
+  delay(200);
 }
 
 /* Frame management */
