@@ -27,8 +27,8 @@
 // also _BV(MUX5)
 #define ADC_TEMP _BV(REFS0) | _BV(REFS1) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0)
 
-#define PIN_SPEAKER_1 A2
-#define PIN_SPEAKER_2 A3
+#define PIN_SPEAKER_1 NOT_A_PIN //A2
+#define PIN_SPEAKER_2 5 //A3
 
 class Arduboy : public Print, public ArduboyCore
 {

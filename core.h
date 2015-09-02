@@ -14,11 +14,11 @@
 
 #define CS 6
 #define DC 4
-#define RST 12
+#define RST A3 //7 // A3
 
 // pin values for buttons, probably shouldn't use these
 #define PIN_LEFT_BUTTON 9
-#define PIN_RIGHT_BUTTON 5
+#define PIN_RIGHT_BUTTON A2 //5
 #define PIN_UP_BUTTON 8
 #define PIN_DOWN_BUTTON 10
 #define PIN_A_BUTTON A0

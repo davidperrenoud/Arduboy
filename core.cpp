@@ -221,7 +221,8 @@ uint8_t ArduboyCore::getInput()
   // down, left, up
   uint8_t buttons = ((~PINB) & B01110000);
   // right button
-  buttons = buttons | (((~PINC) & B01000000) >> 4);
+//  buttons = buttons | (((~PINC) & B01000000) >> 4);
+  buttons = buttons | (((~PINF) & B00100000) >> 3);
   // A and B
   buttons = buttons | (((~PINF) & B11000000) >> 6);
   #endif
