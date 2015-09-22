@@ -1,6 +1,8 @@
 ArduboyLib
 ==========
 
+[![Join the chat at https://gitter.im/davidperrenoud/Arduboy](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/davidperrenoud/Arduboy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Core library for the Arduboy.  If you're building an app for the Arduboy this is likely where you want to start.
 
 
