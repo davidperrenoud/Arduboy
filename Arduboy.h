@@ -27,7 +27,7 @@
 #define PIN_SPEAKER_1 A2
 #define PIN_SPEAKER_2 A3
 
-class Arduboy : public Print, public ArduboyCore
+class Arduboy : public ArduboyCore
 {
 public:
   Arduboy();
@@ -144,7 +144,7 @@ public:
   unsigned char* getBuffer();
 
   /// Writes a single ASCII character to the screen.
-  virtual size_t write(uint8_t);
+  size_t write(uint8_t);
   
   /// Seeds the random number generator with entropy from the temperature, voltage reading, and microseconds since boot.
   /**
