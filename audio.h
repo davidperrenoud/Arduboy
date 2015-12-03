@@ -16,22 +16,22 @@
 class ArduboyAudio
 {
 public:
-	void setup();
-	void on();
-	void off();
-	void save_on_off();
-	bool enabled();
-	void tone(uint8_t channel, unsigned int frequency, unsigned long duration);
+  void setup();
+  void on();
+  void off();
+  void save_on_off();
+  bool enabled();
+  void tone(uint8_t channel, unsigned int frequency, unsigned long duration);
 
 protected:
-	bool audio_enabled;
+  bool audio_enabled;
 };
 
 
 class ArduboyTunes
 {
 public:
-	// Playtune Functions
+  // Playtune Functions
   
   /// Assign a timer to an output pin.
   void initChannel(byte pin);
@@ -48,15 +48,15 @@ public:
   /// Stop all timers.
   void closeChannels();
   
-	bool playing();
+  bool playing();
   void tone(unsigned int frequency, unsigned long duration);
 
-	// called via interrupt
-	void static step();
-	void static soundOutput();
+  // called via interrupt
+  void static step();
+  void static soundOutput();
 
 private:
-	void static playNote (byte chan, byte note);
-	void static stopNote (byte chan);
+  void static playNote (byte chan, byte note);
+  void static stopNote (byte chan);
 };
 #endif
