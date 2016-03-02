@@ -1,6 +1,5 @@
-#include <SPI.h>
-#include <EEPROM.h>
 #include "Arduboy.h"
+#include <ArduboyPlaytune.h>
 
 const byte PROGMEM score [] = {
   // Sinfonia No.12 in A major BWV.798 J.S.Bach
@@ -156,24 +155,56 @@ const byte PROGMEM score [] = {
   0x91,0x47, 0,53, 0,141, 0x80, 0x81, 0x82, 0x90,0x47, 0x91,0x44, 0x92,0x28, 0,95, 1,77, 0,202,
   0x80, 0x81, 0x90,0x45, 0,91, 0,136, 0x80, 0x82, 0x90,0x45, 0x91,0x2D, 7,83, 0x80, 0x81, 0xf0};
 
-Arduboy display;
+Arduboy arduboy;
+AbPrinter text(arduboy);
+ArduboyPlaytune tunes;
 
-void setup() {
-  SPI.begin();
-  display.start();
-  display.setTextSize(4);
-  display.setCursor(0,0);
-  display.print("Music\nDemo");
-  display.display();
+void setup()
+{
+  arduboy.begin();
+  text.setSize(4);
+  text.setCursor(0,0);
+  text.print("Music\nDemo");
+
+  // audio setup
+  arduboy.audio.on();
+  tunes.initChannel(PIN_SPEAKER_1);
+  tunes.initChannel(PIN_SPEAKER_2);
+
+  arduboy.display();
 }
 
-void loop () {
+
+int x = 0, y = 0;
+
+void loop ()
+{
   // pause render until it's time for the next frame
-  if (!(display.nextFrame()))
+  if (!(arduboy.nextFrame()))
     return;
 
-  // play the tune if we aren't already
-  if (!display.tunes.playing())
-    display.tunes.playScore(score);
+  if (arduboy.pressed(UP_BUTTON)) {
+    y-=1;
+  } else if (arduboy.pressed(DOWN_BUTTON)) {
+    y+=1;
+  } else if (arduboy.pressed(LEFT_BUTTON)) {
+    x-=1;
+  } else if (arduboy.pressed(RIGHT_BUTTON)) {
+    x+=1;
+  }
 
+  if (arduboy.pressed(A_BUTTON)) {
+    arduboy.invert(true);
+  } else if (arduboy.pressed(B_BUTTON)) {
+    arduboy.invert(false);
+  }
+
+  arduboy.clear();
+  text.setCursor(x,y);
+  text.print("Music\nDemo");
+  arduboy.display();
+
+  // play the tune if we aren't already
+  if (!tunes.playing())
+    tunes.playScore(score);
 }

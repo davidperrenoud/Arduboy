@@ -1,45 +1,68 @@
-ArduboyLib
-==========
+Arduboy Library
+===============
+This library provides Arduboy's  core functionality.
 
-Core library for the Arduboy.  If you're building an app for the Arduboy this is likely where you want to start.
+## Using the Library
+To use the Arduboy library, it must be installed and then included in your project.
 
+### Install
+Install the library by cloning its repository.
+```	
+$ git clone https://github.com/Arduboy/Arduboy.git
+```
 
-## How to use the library
+#### Where to Install
 
-Using `git` clone the repository.  Preferably you should clone this into your Arduino `libraries` directory.  This will allow the Arduboy library code to be used by any sketches you write or download later.  On Mac the `libraries` folder can be found in `[HOME]/Documents/Ardiuno/libraries`.
+The library should be installed into your user's home Arduino `libraries` directory. Refer to the following list for the location of the Arduino `libraries` folder.
 
-**From a terminal or through Windows Powershell**
-	
-    $ git clone https://github.com/Arduboy/Arduboy.git
+**Linux**
+```
+/home/username/Documents/Arduino/libraries
+```
+**Mac**
+```
+/Users/username/Documents/Arduino/libraries
+```
+**Windows**
+```
+C:\Users\username\My Documents\Arduino\libraries
+```
 
-Open the any of the example .ino files in the Arduino IDE and select the **Leonardo** board as the target platform. Compile the source code, and upload to the Arduboy.
+If you don't find the `libraries` folder in one of the above locations, you can determine its location using the navigation menu `File > Preferences`. In the `Settings` tab will be a `Sketchbook location:` field. The `libraries` folder will be in the folder set in this field.
 
-### Developing on the core lib while having a "stable" version installed in your libraries folder
+### Include
+To use the Arduboy library in your own sketches, include the `Arduboy.h` header file. To do so, add the following line to the top of your `.ino` file.
+```C
+#include "Arduboy.h"
+```
 
-I haven't found a great way to do this yet.  The scenario is you want to compile random sketches off the Internet using the installed core library but you also want to do your own development work on the core library - and compile some sketches against your modified version of the core lib.
+You can have the Arduino IDE add `#include "Arduboy.h"` to your sketch automatically by using the navigation menu `Sketch > Include Library > Arduboy`.
 
-What I've done for now is just rename the stable version in `libraries` to `ArduinoStable` and keep the library I'm developing against in `Arduboy`.  Most everything I'm doing is compiling against the development version.  If I had to switch back and forth a lot I'd probably write a helper script to symlink in whichever library I needed.
+### Board Selection
+Select the **Leonardo** board as the target platform.
 
-If anyone else has a better idea here please let us know.
+### Examples
+Example games and source can be found in the `examples` directory.
 
-### Using sketches that include arduboy.h and arduboy.cpp files
+#### Playing Examples
+Find and play an example by opening it through the Arduino IDE, compiling, and uploading the example to the Arduboy.
+Examples can be found in the Arduino IDE in the navigation menu under, `File > Examples > Arduboy > Example_Name`.
 
-These likely will not compile because Arduino will try and also link in the Arduboy library you installed in `libraries`.  This will result in a bunch of errors during compile.
+### Running on a Development Board
+To run this library on a development Arduboy board, edit `src/core/core.h` so that `#define AB_DEVKIT` is uncommented and `#define ARDUBOY_10` is comment out.
 
+```cpp
+//#define ARDUBOY_10   //< compile for the production Arduboy v1.0
+#define AB_DEVKIT    //< compile for the official dev kit
+```
 
-You have two chocies:
+### Sketches Already Including the Arduboy Library
+Sketches that include copies of the Arduboy library may not compile if the Arduboy library has been installed system wide. In these cases the Arduino compiler will try and link the system Arduboy library source with the local header file, which can cause compilation errors if the local library source differs from the system's Arduboy source.
 
-- Remove the `Arduboy.cpp` and `Arduboy.h` and try to compile with the installed library.  This might work if the libraries are both close enough in version.
-- Rename `Arduboy.h` to `CustomArduboy.h` (or a similar name) and change the `.ino` sketch file to `#include "CustomArduboy.h"`.  This will trick the Arduino software into thinking CustomArduboy is an entirely different library (which it will be at this point) and not try and use the global library you've installed into Arduino
+To compile sketches that have included copies of the Aruboy Library,
 
-## Examples
-
-Examples can be found in the `examples` directory.
-
-### Tunes
-
-Shows how to use the `tunes` API to play music.
-
-### ArduBreakout
-
-A simple clone of the classic "Breakout".
+>Remove the local `Arduboy.cpp` and `Arduboy.h` files and try recompiling. This will only work in some cases.
+>
+>**OR**
+>
+>Rename `Arduboy.h` to `CustomArduboy.h` (or a similar name) and add `#include "CustomArduboy.h"` to the `.ino` sketch file. 

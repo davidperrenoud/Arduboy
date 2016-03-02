@@ -1,10 +1,16 @@
 #ifndef Arduboy_h
 #define Arduboy_h
 
-#include "core.h"
-#include <SPI.h>
+#include "core/core.h"
+#include "ab_printer.h"
 #include <Print.h>
 #include <limits.h>
+
+// Library version.
+// For a version number in the form of x.y.z the value of the define will be
+// ((x * 10000) + (y * 100) + (z)) as a decimal number.
+// So, it will read as xxxyyzz, with no leading zeros on x.
+#define ARDUBOY_LIB_VER 10200
 
 // EEPROM settings
 #define EEPROM_VERSION 0
@@ -15,19 +21,22 @@
 #define EEPROM_STORAGE_SPACE_START 16 // and onward
 
 // eeprom settings above are neded for audio
-#include "audio.h"
+#include "audio/audio.h"
 
 #define PIXEL_SAFE_MODE
 
+// pixel colors
+#define INVERT 2 //< lit/unlit pixel
+#define WHITE 1 //< lit pixel
+#define BLACK 0 //< unlit pixel
+
 // compare Vcc to 1.1 bandgap
-#define ADC_VOLTAGE _BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1)
+#define ADC_VOLTAGE (_BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1))
 // compare temperature to 2.5 internal reference and _BV(MUX5)
-#define ADC_TEMP _BV(REFS0) | _BV(REFS1) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0)
+#define ADC_TEMP (_BV(REFS0) | _BV(REFS1) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0))
 
-#define PIN_SPEAKER_1 A2
-#define PIN_SPEAKER_2 A3
 
-class Arduboy : public Print, public ArduboyCore
+class Arduboy : public ArduboyCore
 {
 public:
   Arduboy();
@@ -40,15 +49,43 @@ public:
 
   /// Returns true if the button mask passed in not pressed.
   /**
-   * if (not_pressed(LEFT_BUTTON))
+   * if (notPressed(LEFT_BUTTON))
    */
-  boolean not_pressed(uint8_t buttons);
+  boolean notPressed(uint8_t buttons);
 
-  /// Initializes the display.
-  void start();
+  /// Initialize hardware, boot logo, boot utilities, etc.
+  void begin();
+
+  /// Init just hardware, no logo, no boot utilities.
+  /**
+   * Look at the source for `begin()` and just rip out what you do not
+   * need and start there.  Calling just `boot()` might work also
+   * depending on your requirements.
+   *
+   * The minimum recommended `begin` replacement:
+   *
+   *   arduboy.boot()         // raw hardware init
+   *   arduboy.audio.begin()  // if you need audio
+   */
+  // void boot(); // defined in core.cpp
+
+  void start() __attribute__((deprecated)) __attribute__ ((warning("use begin() instead")));
+
+  /// Scrolls in the Arduboy logo
+  void bootLogo();
+
+  /// Flashlight mode
+  /**
+   * Hold up key when booting to enable, press down key to exit
+   * or simply turn off your Arduboy.  Your sketches can also
+   * call this at any time.  It goes into a tight loop until the
+   * down buttn is pressed.
+   */
+  void flashlight();
 
   /// Clears display.
-  void clearDisplay();
+  void clear();
+  void clearDisplay() __attribute__((deprecated)) __attribute__ ((warning("use clear() instead")));
 
   /// Copies the contents of the screen buffer to the screen.
   /**
@@ -68,16 +105,16 @@ public:
   /**
    * Draws a circle in white or black. X and Y are the center point of the circle.
    */
-  void drawCircle(int16_t x0, int16_t y0, int16_t r, uint8_t color);
+  void drawCircle(int16_t x0, int16_t y0, uint8_t r, uint8_t color);
 
   /// Draws one or more "corners" of a circle.
-  void drawCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, uint8_t color);
+  void drawCircleHelper(int16_t x0, int16_t y0, uint8_t r, uint8_t cornername, uint8_t color);
 
   /// Draws a filled-in circle.
-  void fillCircle(int16_t x0, int16_t y0, int16_t r, uint8_t color);
+  void fillCircle(int16_t x0, int16_t y0, uint8_t r, uint8_t color);
 
    /// Draws one or both vertical halves of a filled-in circle.
-  void fillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, int16_t delta, uint8_t color);
+  void fillCircleHelper(int16_t x0, int16_t y0, uint8_t r, uint8_t cornername, int16_t delta, uint8_t color);
 
   /// Draws a line between two points.
   /**
@@ -86,25 +123,25 @@ public:
   void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t color);
 
   /// Draws a rectangle of a width and height.
-  void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t color);
+  void drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t color);
 
   /// Draws vertical line.
-  void drawFastVLine(int16_t x, int16_t y, int16_t h, uint8_t color);
+  void drawFastVLine(int16_t x, int16_t y, uint8_t h, uint8_t color);
 
   /// Draws a horizontal line.
-  void drawFastHLine(int16_t x, int16_t y, int16_t w, uint8_t color);
+  void drawFastHLine(int16_t x, int16_t y, uint8_t w, uint8_t color);
 
   /// Draws a filled-in rectangle.
-  void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t color);
+  void fillRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t color);
 
   /// Fills the screen buffer with white or black.
   void fillScreen(uint8_t color);
 
   /// Draws a rectangle with rounded edges.
-  void drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint8_t color);
+  void drawRoundRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t r, uint8_t color);
 
   /// Draws a filled-in rectangle with rounded edges.
-  void fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint8_t color);
+  void fillRoundRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t r, uint8_t color);
 
    /// Draws the outline of a triangle.
   void drawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t color);
@@ -113,7 +150,7 @@ public:
   void fillTriangle (int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t color);
 
   /// Draws a bitmap from program memory to a specific X/Y
-  void drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint8_t color);
+  void drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color);
 
   /// Draws images that are bit-oriented horizontally.
   /**
@@ -122,30 +159,14 @@ public:
    * allows them to be directly written to the screen. It is
    * recommended you use drawBitmap when possible.
    */
-  void drawSlowXYBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint8_t color);
+  void drawSlowXYBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color);
 
   /// Draws an ASCII character at a point.
   void drawChar(int16_t x, int16_t y, unsigned char c, uint8_t color, uint8_t bg, uint8_t size);
 
-  /// Sets the location of the screen cursor.
-  void setCursor(int16_t x, int16_t y);
-
-  /// Set text size
-  /**
-   * As mentioned in drawChar(), individual ASCII characters are 6x8 pixels
-   * (5x7 with spacing on two edges). The size is a pixel multiplier,
-   * so a size of 2 means each character will be 12x16, etc.
-   */
-  void setTextSize(uint8_t s);
-
-  /// Sets whether text will wrap at screen edges.
-  void setTextWrap(boolean w);
-
   unsigned char* getBuffer();
 
-  /// Writes a single ASCII character to the screen.
-  virtual size_t write(uint8_t);
-  
+
   /// Seeds the random number generator with entropy from the temperature, voltage reading, and microseconds since boot.
   /**
    * This method is still most effective when called semi-randomly such
@@ -157,13 +178,12 @@ public:
   /// Swap the references of two pointers.
   void swap(int16_t& a, int16_t& b);
 
-  ArduboyTunes tunes;
   ArduboyAudio audio;
 
   void setFrameRate(uint8_t rate);
   bool nextFrame();
   bool everyXFrames(uint8_t frames);
-  
+
   /// Returns the load on the CPU as a percentage.
   /**
    * This is based on how much of the time your app is spends rendering
@@ -171,7 +191,7 @@ public:
    * really slowly.
    */
   int cpuLoad();
-  
+
   uint8_t frameRate;
   uint16_t frameCount;
   uint8_t eachFrameMillis;
@@ -180,14 +200,13 @@ public:
   bool post_render;
   uint8_t lastFrameDurationMs;
 
+  /// useful for getting raw approximate voltage values
+  uint16_t rawADC(byte adc_bits);
+
 protected:
   unsigned char sBuffer[(HEIGHT*WIDTH)/8];
 
-  uint8_t readCapacitivePin(int pinToMeasure);
-  uint8_t readCapXtal(int pinToMeasure);
-  uint16_t rawADC(byte adc_bits);
 
-// Adafruit stuff
 protected:
   int16_t cursor_x;
   int16_t cursor_y;
